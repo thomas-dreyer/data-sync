@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSyncWeb", "DataSyncWeb\DataSyncWeb.csproj", "{FB623E8E-CAA5-4C15-B164-9C6EC4A3D5D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSyncWeb.Tests", "DataSyncWeb.Tests\DataSyncWeb.Tests.csproj", "{A8338B5C-D4FB-4433-81F4-F242F6B7528E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB623E8E-CAA5-4C15-B164-9C6EC4A3D5D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB623E8E-CAA5-4C15-B164-9C6EC4A3D5D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB623E8E-CAA5-4C15-B164-9C6EC4A3D5D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB623E8E-CAA5-4C15-B164-9C6EC4A3D5D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8338B5C-D4FB-4433-81F4-F242F6B7528E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8338B5C-D4FB-4433-81F4-F242F6B7528E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8338B5C-D4FB-4433-81F4-F242F6B7528E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8338B5C-D4FB-4433-81F4-F242F6B7528E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
