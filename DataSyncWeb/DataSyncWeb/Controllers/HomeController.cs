@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using DataSyncWeb.Core;
+using System;
 using System.Web.Mvc;
 
 namespace DataSyncWeb.Controllers
@@ -26,5 +24,19 @@ namespace DataSyncWeb.Controllers
 
             return View();
         }
+
+        public ActionResult Backup(string source, string destination)
+        {
+            FolderEntry sourceFolder = DataComparer.IndexDirectory(source);
+            FolderEntry destinationFolder = DataComparer.IndexDirectory(destination);
+            Guid unique = DataComparer.SyncFolders(sourceFolder, destinationFolder);
+            return View(unique);
+        }
+
+        public PartialViewResult BackupProgress(Guid unique)
+        {
+            return new PartialViewResult();
+        }
+
     }
 }
