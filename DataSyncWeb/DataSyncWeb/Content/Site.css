@@ -4,7 +4,8 @@
 }
 
 /* Set padding to keep content from hitting the edges */
-.body-content {
+.body-content 
+{
     padding-left: 15px;
     padding-right: 15px;
 }
@@ -12,13 +13,109 @@
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
-.dl-horizontal dt {
+.dl-horizontal dt 
+{
     white-space: normal;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
-textarea {
-    max-width: 280px;
+textarea 
+{
+    max-width: 500px;
+    width: 400px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus
+input:-webkit-autofill, 
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus 
+{
+    border-style:solid;
+    border-color: lightgray;
+  -webkit-text-fill-color: black;
+  background-color: #dbe6ff;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.textStyle
+{
+    color: white !important;
+    list-style: none;
+    font-size: 20pt;
+    margin-left:-16px;
+    margin-top:10px;
+}
+
+#contentHolder
+{
+    width: 50%;
+    margin-left: 19%;
+    margin-top: 10%;
+    font-size: 16pt;
+}
+
+.spacing
+{
+    margin-top: 10px;
+}
+
+.buttonStyle
+{
+    margin-top: 10%;
+    font-size: 16pt;
+    background-color: gray;
+    border-color: #4f4e4e;
+    border-style: solid;
+    border-width: 2px;
+    color: white;
+    width: 100%;
+    margin-left: 80%;
+    transition: ease-in-out 0.75s;
+}
+
+.buttonStyle:hover
+{
+    border-color: #373737;
+    text-shadow: 0px 0px 2px #373737;
+    background-color: #a2a3a4;
+}
+
+.buttonStyle:active
+{
+    background-color: gray;
+    border-color: #4f4e4e;
+}
+
+.labelStyle
+{
+    font-size: 100pt;
+    color: #6581c1;
+    margin-top: 20%;
+    margin-left: 28%;
+}
+
+footer
+{
+    height: 80px;
+    vertical-align: bottom;
+    margin-bottom: 0px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    margin: auto;
+}
+
+footer p
+{
+    width: 20%;
+    margin-left: 30%;
+    
 }

@@ -1,36 +1,47 @@
-﻿using System;
+﻿using DataSyncWeb.DataAccessLayer;
+using DataSyncWeb.BusinessLogic;
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.IO;
 
 namespace DataSyncWeb.Core
 {
+    public delegate void DataSyncProgressHandler(SyncInfo syncInfo);
     /// <summary>
     /// Functions as the primary data / file comparer.
     /// </summary>
-    public static class DataComparer
+    public class DataComparer
     {
 
         #region Fields
+
+        DataManager dm = new DataManager();
+
+        #endregion
+
+        #region Events
+
+        public event DataSyncProgressHandler progress;
+
+        #endregion
+
+        #region Private Functions
+
+        private void Progress(SyncInfo syncInfo)
+        {
+            if (progress != null)
+            {
+                progress(syncInfo);
+            }
+        }
 
         #endregion
 
         #region Functions
 
-        public static string FormatSize(long bytes)
-        {
-            string[] levels = new string[] { "bytes", "Kilobytes", "Megabytes", "Gigabytes", "Terabytes" };
-            int level = 0;
-            while (bytes > 1024)
-            {
-                bytes /= 1024;
-                level++;
-            }
-            return string.Format("{0} {1}", bytes, levels[level]);
-        }
 
-        public static FolderEntry IndexDirectory(string source)
+        public FolderEntry IndexDirectory(string source)
         {
             FolderEntry folder = null;
             if (!Directory.Exists(source))
@@ -56,7 +67,7 @@ namespace DataSyncWeb.Core
             return folder;
         }
 
-        public static void DeleteDirectoryRecursive(string directory)
+        public void DeleteDirectoryRecursive(string directory)
         {
             DirectoryInfo dir = new DirectoryInfo(directory);
             foreach (var file in dir.GetFiles())
@@ -70,8 +81,55 @@ namespace DataSyncWeb.Core
             Directory.Delete(directory);
         }
 
-        public static Guid SyncFolders(FolderEntry source, FolderEntry destination)
+        public void SyncFolders(int JobId, FolderEntry source, FolderEntry destination)
         {
+            List<BackupJobDetail> jobDetails = readSyncFolders(JobId, source, destination);
+            BackupJob job = dm.SelectData(new BackupJob(), string.Format("WHERE BackupJobId = {0}", JobId)).FirstOrDefault();
+            int files = 0;
+            long totalBytes = 0;
+            foreach (BackupJobDetail jobDetail in jobDetails)
+            {
+                files++;
+                totalBytes += jobDetail.FileSize;
+            }
+            double prog = 0;
+            foreach (BackupJobDetail jobDetail in jobDetails)
+            {
+                jobDetail.DateSynced = DateTime.Now;
+                File.Copy(jobDetail.FileNameFrom, jobDetail.FileNameTo, true);
+                dm.InsertData(jobDetail);
+                prog++;
+                job.Progress = (decimal)Math.Round((prog / files) * 100, 2);
+                if (files == prog)
+                {
+                    job.EndTime = DateTime.Now;
+                }
+                dm.UpdateData(job);
+                Progress(new SyncInfo() { FileCount = 1, FileSize = jobDetail.FileSize, FileName = jobDetail.FileNameTo });
+            }
+            
+            foreach (var item in destination.Files.Keys)
+            {
+                // delete file if not in source.
+                if (!source.Files.ContainsKey(item))
+                {
+                    File.Delete(Path.Combine(destination.Path, destination.Files[item].FileName));
+                }
+            }
+            // destroy all folders that do not exist in the source.
+            foreach (var item in destination.Folders)
+            {
+                if (!source.Folders.ContainsKey(item.Key))
+                {
+                    DeleteDirectoryRecursive(item.Value.Path);
+                }
+               // SyncFolders(JobId, item.Value, destination.Folders[item.Key]);
+            }
+        }
+
+        private List<BackupJobDetail> readSyncFolders(int JobId, FolderEntry source, FolderEntry destination)
+        {
+            List<BackupJobDetail> jobDetails = new List<BackupJobDetail>();
             foreach (var item in source.Folders)
             {
                 if (!destination.Folders.ContainsKey(item.Key))
@@ -80,7 +138,7 @@ namespace DataSyncWeb.Core
                     destination.AddFolder(newFolder);
                     Directory.CreateDirectory(destination.Folders[item.Key].Path);
                 }
-                SyncFolders(item.Value, destination.Folders[item.Key]);
+                jobDetails.AddRange(readSyncFolders(JobId,item.Value, destination.Folders[item.Key]));
             }
 
             foreach (var item in source.Files.Keys)
@@ -99,27 +157,18 @@ namespace DataSyncWeb.Core
                 }
                 if (copy)
                 {
-                    File.Copy(Path.Combine(source.Path, item), Path.Combine(destination.Path, item), true);
+                    BackupJobDetail jobDetail = new BackupJobDetail()
+                    {
+                        BackupJobId = JobId,
+                        FileNameFrom = Path.Combine(source.Path, item),
+                        FileNameTo = Path.Combine(destination.Path, item),
+                        FileSize = source.Files[item].FileSize,
+                        DateSynced = DateTime.Now
+                    };
+                    jobDetails.Add(jobDetail);
                 }
             }
-            foreach (var item in destination.Files.Keys)
-            {
-                // delete file if not in source.
-                if (!source.Files.ContainsKey(item))
-                {
-                    File.Delete(Path.Combine(destination.Path, destination.Files[item].FileName));
-                }
-            }
-            // destroy all folders that do not exist in the source.
-            foreach (var item in destination.Folders)
-            {
-                if (!source.Folders.ContainsKey(item.Key))
-                {
-                    DeleteDirectoryRecursive(item.Value.Path);
-                }
-                SyncFolders(item.Value, destination.Folders[item.Key]);
-            }
-            return new Guid();
+            return jobDetails;
         }
 
         #endregion

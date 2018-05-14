@@ -2,22 +2,32 @@
     ViewBag.Title = "Home Page";
 }
 
-@using (Html.BeginForm("Backup", "Home", "POST"))
-{
+<div id="contentHolder">
+    @using (Html.BeginForm("Backup", "Home", "", FormMethod.Post, new { Id = "frmBackup" }))
+    {
+
+        <div class="col-lg-6">
+            <label>Source</label>
+        </div>
+        <div class="col-lg-6">
+            @Html.Editor("source")
+        </div>
+        <br />
+        <div class="col-lg-6 spacing">
+            <label>Destination</label>
+        </div>
+        <div class="col-lg-6 spacing">
+            @Html.Editor("destination")
+        </div>
+
+
+    }
     <div class="col-lg-6">
-        <label>Source</label>
+        <button id="btnBackup" class="buttonStyle" type="submit" onclick="startBackup()">Sync Folders</button>
     </div>
-    <div class="col-lg-6">
-        @Html.Editor("source")
-    </div>
-    <br />
-    <div class="col-lg-6">
-        <label>Destination</label>
-    </div>
-    <div class="col-lg-6">
-        @Html.Editor("destination")
-    </div>
-    <div class="col-lg-6">
-        <button type="submit">Sync Folders</button>
-    </div>
-}
+</div>
+
+        <div id="logDiv" class="labelStyle">
+
+        </div>
+
